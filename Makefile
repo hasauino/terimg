@@ -7,6 +7,7 @@ build/Makefile: build
 	cd build && \
 	cmake ..
 
+.PHONY: build/bin/terimg
 build/bin/terimg: build/Makefile
 	$(MAKE) -C build
 

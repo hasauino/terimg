@@ -16,10 +16,12 @@ const std::string default_markers{"   .,:;i80@"};
 class Converter
 {
 public:
-    Converter(int _width = 100, std::string _markers = default_markers)
+    Converter(int _width = 100, std::string _markers = default_markers, int _brightness = 0, double _contrast = 1.0)
     {
         width = _width;
         markers = _markers;
+        brightness = _brightness;
+        contrast = _contrast;
     }
     std::string &convert(cv::Mat &_img)
     {
@@ -29,7 +31,7 @@ public:
         {
             for (int j = 0; j < img.cols; j++)
             {
-                result += map(img.at<unsigned char>(i, j));
+                result += map((img.at<unsigned char>(i, j) * contrast + brightness));
             }
             result += '\n';
         }
@@ -72,6 +74,8 @@ private:
     std::string markers;
     uint8_t pixle_max{255};
     int width;
+    int brightness;
+    float contrast;
     float scale_factor;
     cv::Mat img, bw;
     std::string result;
@@ -79,6 +83,15 @@ private:
 
     char map(unsigned char intensity)
     {
+
+        if (intensity > pixle_max)
+        {
+            intensity = pixle_max;
+        }
+        if (intensity < 0)
+        {
+            intensity = 0;
+        }
 
         auto index = (intensity * (markers.size() - 1)) / pixle_max;
         return markers[index];
@@ -119,7 +132,16 @@ int main(int argc, char **argv)
         .default_value(100)
         .help("number of chars in a row of the output string")
         .scan<'d', int>();
-    program.add_argument("--characters", "-c")
+    program.add_argument("--brightness", "-b")
+        .default_value(0)
+        .help("Number between 0-255 by which pixel intensities are incremented")
+        .scan<'d', int>();
+    program.add_argument("--contrast", "-c")
+        .default_value(1.0)
+        .help("Float number defining contrast. 1.0 is no change in contrast, "
+              "0.5 decrease 50%, and 1.5 increase by 150%")
+        .scan<'g', double>();
+    program.add_argument("--text", "-t")
         .default_value(default_markers)
         .help("characters used in rendering the images. Ordered from darkest to brightest");
     program.add_argument("--path", "-p")
@@ -129,6 +151,7 @@ int main(int argc, char **argv)
         .default_value(0)
         .help("Index of video device (used in video device mode when image path is not given")
         .scan<'d', int>();
+
     try
     {
         program.parse_args(argc, argv);
@@ -142,7 +165,9 @@ int main(int argc, char **argv)
 
     std::signal(SIGINT, sig_handler);
     const fs::path img_path(program.get<std::string>("--path"));
-    Converter convr(program.get<int>("--width"), program.get<std::string>("--characters"));
+    Converter convr(program.get<int>("--width"),
+                    program.get<std::string>("--text"),
+                    program.get<int>("--brightness"), program.get<double>("--contrast"));
     if (img_path.string() == "")
     {
         convr.spin_renderer(program.get<int>("--video"), 100us);
