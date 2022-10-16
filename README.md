@@ -29,7 +29,7 @@ chmod +x terimg
 
 ## Usage
 
-```bash
+```
 Usage: terimg [-h] [--width VAR] [--brightness VAR] [--contrast VAR] [--text VAR] [--path VAR] [--video VAR]
 
 Optional arguments:
