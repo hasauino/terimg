@@ -1,0 +1,19 @@
+name: Ubuntu build
+run-name: ${{ github.actor }} building for ubuntu
+on:
+  push:
+    tags:        
+      - v*
+jobs:
+  Build:
+    runs-on: ubuntu-22.04
+    steps:
+      - run: sudo apt install libopencv-dev
+      - uses: actions/checkout@v3
+      - run: make
+      - run: chmod +x build/bin/terimg
+      - run: mv build/bin/terimg build/bin/terimg-ubuntu-22.04-x64
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/bin/terimg-ubuntu-22.04-x64
