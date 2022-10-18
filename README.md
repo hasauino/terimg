@@ -47,7 +47,13 @@ Optional arguments:
 
 ## From source
 
-- You need to install OpenCV. Then:
+- You need to install OpenCV first:
+
+```bash
+sudo apt install libopencv-dev
+```
+
+-  Then:
 
 ```bash
 make
