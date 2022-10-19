@@ -1,19 +1,45 @@
-name: Ubuntu build
+name: Ubuntu 22 build
 run-name: ${{ github.actor }} building for ubuntu
 on:
   push:
-    tags:        
+    tags:
       - v*
 jobs:
-  Build:
+  Build_Ubuntu22:
     runs-on: ubuntu-22.04
     steps:
       - run: sudo apt install libopencv-dev
       - uses: actions/checkout@v3
-      - run: make
-      - run: chmod +x build/bin/terimg
-      - run: mv build/bin/terimg build/bin/terimg-ubuntu-22.04-x64
+      - run: make build/terimg_amd64.deb
+      - run: mv build/terimg_amd64.deb build/terimg_ubuntu_22_x64.deb
+      - uses: actions/upload-artifact@v3
+        with:
+          name: terimg_ubuntu_22_x64_deb
+          path: build/terimg_ubuntu_22_x64.deb
+  Build_Ubuntu20:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: sudo apt install libopencv-dev
+      - uses: actions/checkout@v3
+      - run: make build/terimg_amd64.deb
+      - run: mv build/terimg_amd64.deb build/terimg_ubuntu_20_x64.deb
+      - uses: actions/upload-artifact@v3
+        with:
+          name: terimg_ubuntu_20_x64_deb
+          path: build/terimg_ubuntu_20_x64.deb
+  Release:
+    needs: [Build_Ubuntu22, Build_Ubuntu20]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: terimg_ubuntu_22_x64_deb
+      - uses: actions/download-artifact@v3
+        with:
+          name: terimg_ubuntu_20_x64_deb
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: build/bin/terimg-ubuntu-22.04-x64
+          files: |
+            terimg_ubuntu_22_x64.deb
+            terimg_ubuntu_20_x64.deb

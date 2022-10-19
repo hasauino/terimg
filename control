@@ -1,0 +1,6 @@
+Package: terimg
+Version: 0.0.1
+Architecture: amd64
+Maintainer: Hassan Umari <oh91@windowslive.com>
+Description: In-terminal ASCII image viewer
+Depends: libopencv-dev
