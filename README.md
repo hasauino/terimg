@@ -6,23 +6,27 @@ It can show an image if a path is given, otherwise show video device stream.
 
 ![](demo.png)
 
-## How to run
+## Install
 
-- Download binary from the [releases](https://github.com/hasauino/terimg/releases).
+- Download `.deb`  compatible with your distro from [releases](https://github.com/hasauino/terimg/releases).
 
-- Give it execution permission:
+- Install it:
 
 ```bash
-chmod +x terimg
+sudo apt update && sudo apt install ./terimg_ubuntu_<ubuntu version>_x64.deb
 ```
 
 - Run it:
-```bash
-./terimg  # read from webcam
-```
 
 ```bash
-./terimg -p <path to an image>
+terimg  # read from webcam
+terimg -p <path to an image>
+```
+
+- Other options:
+
+```bash
+terimg -h
 ```
 
 
